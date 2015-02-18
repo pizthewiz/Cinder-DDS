@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+    name="DDS"
+    id="com.chordedconstructions.fleshworld.cinder-dds"
+    git="https://github.com/pizthewiz/Cinder-DDS.git"
+    author="Jean-Pierre Mouilleseaux"
+    summary="DXT1/DXT5 image compression and DDS file creation"
+    url="https://github.com/pizthewiz/Cinder-DDS"
+    >
+    <header>include/Cinder-DDS.h</header>
+    <source>src/Cinder-DDS.cpp</source>
+    <header>lib/RygsDXTc/stb_dxt.h</header>
+    <source>lib/RygsDXTc/stb_dxt.cpp</source>
+    <header>lib/soil2/src/SOIL2/image_DXT.h</header>
+    <source>lib/soil2/src/SOIL2/image_DXT.c</source>
+</block>
+</cinder>

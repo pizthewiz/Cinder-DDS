@@ -1,0 +1,6 @@
+[submodule "lib/RygsDXTc"]
+	path = lib/RygsDXTc
+	url = git@github.com:Cyan4973/RygsDXTc.git
+[submodule "lib/soil2"]
+	path = lib/soil2
+	url = git@bitbucket.org:pizthewiz/soil2-git-mirror.git

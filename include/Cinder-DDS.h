@@ -12,6 +12,8 @@
 
 namespace Cinder { namespace DDS {
 
-// stuff
+enum class CompressionType {DXT1, DXT5};
+
+const unsigned char* dxtCompress(const ci::Surface8uRef surface, CompressionType type, int* size);
 
 }}

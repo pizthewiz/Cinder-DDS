@@ -10,8 +10,7 @@
     >
     <header>include/Cinder-DDS.h</header>
     <source>src/Cinder-DDS.cpp</source>
-    <header>lib/RygsDXTc/stb_dxt.h</header>
-    <source>lib/RygsDXTc/stb_dxt.cpp</source>
+
     <header>lib/soil2/src/SOIL2/image_DXT.h</header>
     <source>lib/soil2/src/SOIL2/image_DXT.c</source>
 </block>

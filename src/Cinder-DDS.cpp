@@ -16,7 +16,7 @@ using namespace ci;
 
 namespace Cinder { namespace DDS {
 
-const unsigned char* dxtCompress(const Surface8uRef surface, CompressionType type, int* size) {
+const ci::Buffer ddsConvert(const ci::Surface8uRef surface, CompressionType type) {
     SurfaceChannelOrder channelOrder = SurfaceChannelOrder::UNSPECIFIED;
     switch (type) {
         case CompressionType::DXT1:
@@ -49,7 +49,6 @@ const unsigned char* dxtCompress(const Surface8uRef surface, CompressionType typ
         size_t dataSize = width * height * rowBytes;
         unsigned char* intermediate = (unsigned char*)malloc(dataSize);
         if (!intermediate) {
-            *size = 0;
             return NULL;
         }
         size_t offset = 0;
@@ -74,14 +73,15 @@ const unsigned char* dxtCompress(const Surface8uRef surface, CompressionType typ
     int width = s->getWidth();
     int height = s->getHeight();
     unsigned char* destination = NULL;
+    int dataSize = 0;
 
     // compress
     switch (type) {
         case CompressionType::DXT1:
-            destination = convert_image_to_DXT1(source, width, height, 3, size);
+            destination = convert_image_to_DXT1(source, width, height, 3, &dataSize);
             break;
         case CompressionType::DXT5:
-            destination = convert_image_to_DXT5(source, width, height, 4, size);
+            destination = convert_image_to_DXT5(source, width, height, 4, &dataSize);
             break;
         default:
             assert(false);
@@ -93,7 +93,42 @@ const unsigned char* dxtCompress(const Surface8uRef surface, CompressionType typ
         intermediateSurface = nullptr;
     }
 
-    return destination;
+    if (!destination) {
+        return NULL;
+    }
+
+    DDS_header* header = (DDS_header*)calloc(1, sizeof(DDS_header));
+    if (!header) {
+        return NULL;
+    }
+    header->dwMagic = ('D' << 0) | ('D' << 8) | ('S' << 16) | (' ' << 24);
+    header->dwSize = 124;
+    header->dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT | DDSD_LINEARSIZE;
+    header->dwHeight = width;
+    header->dwWidth = height;
+    header->dwPitchOrLinearSize = dataSize;
+    header->sPixelFormat.dwSize = 32;
+    header->sPixelFormat.dwFlags = DDPF_FOURCC;
+    switch (type) {
+        case CompressionType::DXT1:
+            header->sPixelFormat.dwFourCC = ('D' << 0) | ('X' << 8) | ('T' << 16) | ('1' << 24);
+            break;
+        case CompressionType::DXT5:
+            header->sPixelFormat.dwFourCC = ('D' << 0) | ('X' << 8) | ('T' << 16) | ('5' << 24);
+            break;
+        default:
+            assert(false);
+    }
+    header->sCaps.dwCaps1 = DDSCAPS_TEXTURE;
+
+    Buffer buffer(sizeof(DDS_header) + dataSize);
+    memcpy((unsigned char*)buffer.getData() + 0, header, sizeof(DDS_header));
+    memcpy((unsigned char*)buffer.getData() + sizeof(DDS_header), destination, dataSize);
+
+    free(destination);
+    destination = NULL;
+
+    return buffer;
 }
 
 }}

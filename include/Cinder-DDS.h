@@ -14,7 +14,10 @@ namespace Cinder { namespace DDS {
 
 enum class CompressionType {DXT1, DXT5};
 
-//! Retuns a buffer containing the DDS file header and compressed data
-const ci::Buffer ddsConvert(const ci::Surface8uRef surface, CompressionType type);
+//! Retuns an owned pointer to the DXT compressed data and provides its length in \a length
+const unsigned char* dxtCompress(const ci::Surface8uRef& surface, CompressionType type, int* length);
+
+//! Retuns a buffer containing the DDS file header and DXT compressed data
+const ci::Buffer ddsConvert(const ci::Surface8uRef& surface, CompressionType type);
 
 }}

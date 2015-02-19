@@ -16,7 +16,7 @@ using namespace ci;
 
 namespace Cinder { namespace DDS {
 
-const ci::Buffer ddsConvert(const ci::Surface8uRef surface, CompressionType type) {
+const unsigned char* dxtCompress(const ci::Surface8uRef& surface, CompressionType type, int* length) {
     SurfaceChannelOrder channelOrder = SurfaceChannelOrder::UNSPECIFIED;
     switch (type) {
         case CompressionType::DXT1:
@@ -46,8 +46,8 @@ const ci::Buffer ddsConvert(const ci::Surface8uRef surface, CompressionType type
 
         int32_t width = surface->getWidth();
         int32_t height = surface->getHeight();
-        size_t dataSize = width * height * rowBytes;
-        unsigned char* intermediate = (unsigned char*)malloc(dataSize);
+        size_t size = width * height * rowBytes;
+        unsigned char* intermediate = (unsigned char*)malloc(size);
         if (!intermediate) {
             return NULL;
         }
@@ -73,15 +73,14 @@ const ci::Buffer ddsConvert(const ci::Surface8uRef surface, CompressionType type
     int width = s->getWidth();
     int height = s->getHeight();
     unsigned char* destination = NULL;
-    int dataSize = 0;
 
     // compress
     switch (type) {
         case CompressionType::DXT1:
-            destination = convert_image_to_DXT1(source, width, height, 3, &dataSize);
+            destination = convert_image_to_DXT1(source, width, height, 3, length);
             break;
         case CompressionType::DXT5:
-            destination = convert_image_to_DXT5(source, width, height, 4, &dataSize);
+            destination = convert_image_to_DXT5(source, width, height, 4, length);
             break;
         default:
             assert(false);
@@ -93,7 +92,13 @@ const ci::Buffer ddsConvert(const ci::Surface8uRef surface, CompressionType type
         intermediateSurface = nullptr;
     }
 
-    if (!destination) {
+    return destination;
+}
+
+const ci::Buffer ddsConvert(const ci::Surface8uRef& surface, CompressionType type) {
+    int length = 0;
+    const unsigned char* data = dxtCompress(surface, type, &length);
+    if (!data) {
         return NULL;
     }
 
@@ -104,9 +109,9 @@ const ci::Buffer ddsConvert(const ci::Surface8uRef surface, CompressionType type
     header->dwMagic = ('D' << 0) | ('D' << 8) | ('S' << 16) | (' ' << 24);
     header->dwSize = 124;
     header->dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT | DDSD_LINEARSIZE;
-    header->dwHeight = width;
-    header->dwWidth = height;
-    header->dwPitchOrLinearSize = dataSize;
+    header->dwHeight = surface->getHeight();
+    header->dwWidth = surface->getWidth();
+    header->dwPitchOrLinearSize = length;
     header->sPixelFormat.dwSize = 32;
     header->sPixelFormat.dwFlags = DDPF_FOURCC;
     switch (type) {
@@ -121,12 +126,12 @@ const ci::Buffer ddsConvert(const ci::Surface8uRef surface, CompressionType type
     }
     header->sCaps.dwCaps1 = DDSCAPS_TEXTURE;
 
-    Buffer buffer(sizeof(DDS_header) + dataSize);
+    Buffer buffer(sizeof(DDS_header) + length);
     memcpy((unsigned char*)buffer.getData() + 0, header, sizeof(DDS_header));
-    memcpy((unsigned char*)buffer.getData() + sizeof(DDS_header), destination, dataSize);
+    memcpy((unsigned char*)buffer.getData() + sizeof(DDS_header), data, length);
 
-    free(destination);
-    destination = NULL;
+    free((void*)data);
+    data = NULL;
 
     return buffer;
 }

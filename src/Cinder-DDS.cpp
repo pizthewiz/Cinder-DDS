@@ -25,8 +25,6 @@ const unsigned char* dxtCompress(const ci::Surface8uRef& surface, CompressionTyp
         case CompressionType::DXT5:
             channelOrder = SurfaceChannelOrder::RGBA;
             break;
-        default:
-            assert(false);
     }
 
     // create intermediate surface if the channels are not in the necessary order
@@ -82,8 +80,6 @@ const unsigned char* dxtCompress(const ci::Surface8uRef& surface, CompressionTyp
         case CompressionType::DXT5:
             destination = convert_image_to_DXT5(source, width, height, 4, length);
             break;
-        default:
-            assert(false);
     }
 
     // release buffer backing intermediate surface
@@ -102,6 +98,7 @@ const ci::Buffer ddsConvert(const ci::Surface8uRef& surface, CompressionType typ
         return NULL;
     }
 
+    // see https://msdn.microsoft.com/en-us/library/bb943982(v=vs.85).aspx
     DDS_header* header = (DDS_header*)calloc(1, sizeof(DDS_header));
     if (!header) {
         return NULL;
@@ -121,8 +118,6 @@ const ci::Buffer ddsConvert(const ci::Surface8uRef& surface, CompressionType typ
         case CompressionType::DXT5:
             header->sPixelFormat.dwFourCC = ('D' << 0) | ('X' << 8) | ('T' << 16) | ('5' << 24);
             break;
-        default:
-            assert(false);
     }
     header->sCaps.dwCaps1 = DDSCAPS_TEXTURE;
 

@@ -16,7 +16,7 @@ using namespace ci;
 
 namespace Cinder { namespace DDS {
 
-const unsigned char* dxtCompress(const ci::Surface8uRef& surface, CompressionType type, int* length) {
+const unsigned char* DXTCompress(const ci::Surface8uRef& surface, CompressionType type, int* length) {
     unsigned char* source = surface->getData();
     int width = surface->getWidth();
     int height = surface->getHeight();
@@ -36,9 +36,9 @@ const unsigned char* dxtCompress(const ci::Surface8uRef& surface, CompressionTyp
     return destination;
 }
 
-const ci::Buffer ddsConvert(const ci::Surface8uRef& surface, CompressionType type) {
+const ci::Buffer DDSConvert(const ci::Surface8uRef& surface, CompressionType type) {
     int length = 0;
-    const unsigned char* data = dxtCompress(surface, type, &length);
+    const unsigned char* data = DXTCompress(surface, type, &length);
     if (!data) {
         return NULL;
     }

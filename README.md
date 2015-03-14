@@ -13,10 +13,10 @@ Grab the project and its dependencies:
 $ git clone --recursive git@github.com:pizthewiz/Cinder-DDS.git
 ```
 
-Convert PNG to DXT5 image and create texture
+Convert PNG to DXT5 compressed DDS file and create texture from it
 ```C++
 auto surface = Surface::create(loadImage(loadAsset("pulsar.png")));
-auto buffer = DDSConvert(surface, CompressionType::DXT5);
+auto buffer = DDSConvert(surface, CompressionFormat::DXT5);
 auto texture = gl::Texture2d::createFromDds(DataSourceBuffer::create(buffer));
 ```
 

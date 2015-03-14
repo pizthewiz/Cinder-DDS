@@ -17,7 +17,7 @@ using namespace ci;
 
 namespace Cinder { namespace DDS {
 
-const unsigned char* DXTCompress(const ci::Surface8uRef& surface, CompressionType type, int* length) {
+const unsigned char* DXTCompress(const ci::Surface8uRef& surface, CompressionFormat format, int* length) {
     unsigned char* source = surface->getData();
     int width = surface->getWidth();
     int height = surface->getHeight();
@@ -26,14 +26,14 @@ const unsigned char* DXTCompress(const ci::Surface8uRef& surface, CompressionTyp
     unsigned char* destination = NULL;
 
     // compress
-    switch (type) {
-        case CompressionType::DXT1:
+    switch (format) {
+        case CompressionFormat::DXT1:
             destination = convert_image_to_DXT1(source, width, height, channels, length);
             break;
-        case CompressionType::DXT5:
+        case CompressionFormat::DXT5:
             destination = convert_image_to_DXT5(source, width, height, channels, length);
             break;
-        case CompressionType::YCoCg_DXT5:
+        case CompressionFormat::YCoCg_DXT5:
             // NB - requires RGB or RGBA
             if (channelOrder != SurfaceChannelOrder::RGB && channelOrder != SurfaceChannelOrder::RGBA) {
                 return NULL;
@@ -46,9 +46,9 @@ const unsigned char* DXTCompress(const ci::Surface8uRef& surface, CompressionTyp
     return destination;
 }
 
-const ci::Buffer DDSConvert(const ci::Surface8uRef& surface, CompressionType type) {
+const ci::Buffer DDSConvert(const ci::Surface8uRef& surface, CompressionFormat format) {
     int length = 0;
-    const unsigned char* data = DXTCompress(surface, type, &length);
+    const unsigned char* data = DXTCompress(surface, format, &length);
     if (!data) {
         return NULL;
     }
@@ -66,12 +66,12 @@ const ci::Buffer DDSConvert(const ci::Surface8uRef& surface, CompressionType typ
     header->dwPitchOrLinearSize = length;
     header->sPixelFormat.dwSize = 32;
     header->sPixelFormat.dwFlags = DDPF_FOURCC;
-    switch (type) {
-        case CompressionType::DXT1:
+    switch (format) {
+        case CompressionFormat::DXT1:
             header->sPixelFormat.dwFourCC = ('D' << 0) | ('X' << 8) | ('T' << 16) | ('1' << 24);
             break;
-        case CompressionType::DXT5:
-        case CompressionType::YCoCg_DXT5:
+        case CompressionFormat::DXT5:
+        case CompressionFormat::YCoCg_DXT5:
             header->sPixelFormat.dwFourCC = ('D' << 0) | ('X' << 8) | ('T' << 16) | ('5' << 24);
             break;
     }

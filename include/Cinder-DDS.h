@@ -12,7 +12,7 @@
 
 namespace Cinder { namespace DDS {
 
-enum class CompressionType {DXT1, DXT5};
+enum class CompressionType {DXT1, DXT5, YCoCg_DXT5};
 
 //! Retuns an owned pointer to the DXT compressed data and provides its length in \a length
 const unsigned char* DXTCompress(const ci::Surface8uRef& surface, CompressionType type, int* length);

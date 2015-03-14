@@ -10,6 +10,7 @@
 
 extern "C" {
     #include "image_DXT.h"
+    #include "image_helper.h"
 }
 
 using namespace ci;
@@ -21,6 +22,7 @@ const unsigned char* DXTCompress(const ci::Surface8uRef& surface, CompressionTyp
     int width = surface->getWidth();
     int height = surface->getHeight();
     int channels = surface->getPixelInc();
+    int channelOrder = surface->getChannelOrder().getCode();
     unsigned char* destination = NULL;
 
     // compress
@@ -29,6 +31,14 @@ const unsigned char* DXTCompress(const ci::Surface8uRef& surface, CompressionTyp
             destination = convert_image_to_DXT1(source, width, height, channels, length);
             break;
         case CompressionType::DXT5:
+            destination = convert_image_to_DXT5(source, width, height, channels, length);
+            break;
+        case CompressionType::YCoCg_DXT5:
+            // NB - requires RGB or RGBA
+            if (channelOrder != SurfaceChannelOrder::RGB && channelOrder != SurfaceChannelOrder::RGBA) {
+                return NULL;
+            }
+            convert_RGB_to_YCoCg(source, width, height, channels);
             destination = convert_image_to_DXT5(source, width, height, channels, length);
             break;
     }
@@ -61,6 +71,7 @@ const ci::Buffer DDSConvert(const ci::Surface8uRef& surface, CompressionType typ
             header->sPixelFormat.dwFourCC = ('D' << 0) | ('X' << 8) | ('T' << 16) | ('1' << 24);
             break;
         case CompressionType::DXT5:
+        case CompressionType::YCoCg_DXT5:
             header->sPixelFormat.dwFourCC = ('D' << 0) | ('X' << 8) | ('T' << 16) | ('5' << 24);
             break;
     }

@@ -15,5 +15,7 @@
     <source>lib/soil2/src/SOIL2/image_DXT.c</source>
     <header>lib/soil2/src/SOIL2/image_helper.h</header>
     <source>lib/soil2/src/SOIL2/image_helper.c</source>
+
+    <copyExclude>samples</copyExclude>
 </block>
 </cinder>

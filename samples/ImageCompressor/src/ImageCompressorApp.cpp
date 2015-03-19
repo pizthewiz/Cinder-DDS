@@ -77,7 +77,7 @@ public:
 private:
     Surface8uRef mSurface;
     gl::Texture2dRef mSourceTexture;
-    gl::Texture2dRef mTexture;
+    gl::Texture2dRef mResultTexture;
     ci::gl::FboRef mFBO;
     ci::gl::GlslProgRef mShader;
 };
@@ -85,7 +85,7 @@ private:
 void ImageCompressorApp::setup() {
     // grab the source
     try {
-        mSurface = Surface::create(loadImage(loadAsset("grad-cutout.png")));
+        mSurface = Surface::create(loadImage(loadAsset("grad.png")));
     } catch (ci::Exception& e) {
         console() << "unable to create surface: " << e.what() << endl;
         quit();
@@ -93,12 +93,12 @@ void ImageCompressorApp::setup() {
     mSourceTexture = gl::Texture::create(*mSurface);
 
     // convert to a DXT compressed DDS file buffer
-    CompressionFormat format = CompressionFormat::DXT5;
+    CompressionFormat format = CompressionFormat::YCoCg_DXT5;
     const Buffer buffer = DDSConvert(mSurface, format);
 
     // create a texture from DDS file buffer
     try {
-        mTexture = gl::Texture2d::createFromDds(DataSourceBuffer::create(buffer));
+        mResultTexture = gl::Texture2d::createFromDds(DataSourceBuffer::create(buffer));
     } catch (ci::Exception& e) {
         console() << "failed to create texture from DDS file: " << e.what() << endl;
         quit();
@@ -107,7 +107,7 @@ void ImageCompressorApp::setup() {
     // handle color space conversion if using YCoCg_DXT5
     if (format == CompressionFormat::YCoCg_DXT5) {
         // create FBO
-        mFBO = gl::Fbo::create(mTexture->getWidth(), mTexture->getHeight());
+        mFBO = gl::Fbo::create(mResultTexture->getWidth(), mResultTexture->getHeight());
 
         // create color space conversion shader
         try {
@@ -128,19 +128,19 @@ void ImageCompressorApp::setup() {
         gl::setMatricesWindow(mFBO->getSize());
         gl::color(Color::white());
 
-        gl::ScopedTextureBind texture(mTexture);
+        gl::ScopedTextureBind texture(mResultTexture);
         gl::ScopedGlslProg shader(mShader);
 
         mShader->uniform("image", 0);
         mShader->uniform("hasAlpha", mSurface->hasAlpha());
-        gl::drawSolidRect(mTexture->getBounds());
+        gl::drawSolidRect(mResultTexture->getBounds());
 
         // pull texture out of the FBO
-        mTexture = mFBO->getColorTexture();
+        mResultTexture = mFBO->getColorTexture();
     }
 
     // denote the texture as vertically flipped
-    mTexture->setTopDown();
+    mResultTexture->setTopDown();
 
     if (mSurface->hasAlpha()) {
         gl::enableAlphaBlending();
@@ -155,12 +155,12 @@ void ImageCompressorApp::draw() {
     }
     gl::draw(mSourceTexture);
 
-    if (!mTexture) {
+    if (!mResultTexture) {
         return;
     }
     gl::pushMatrices(); {
         gl::translate(mSourceTexture->getWidth(), 0);
-        gl::draw(mTexture);
+        gl::draw(mResultTexture);
     } gl::popMatrices();
 }
 

@@ -25,12 +25,12 @@ static const std::string sVertexShaderPassThrough = R"(
     uniform mat4 ciModelViewProjection;
 
     in vec4 ciPosition;
-    in vec4 ciTexCoord0;
+    in vec2	ciTexCoord0;
 
-    out highp vec2 TexCoord0;
+    out vec2 vTexCoord0;
 
     void main() {
-        TexCoord0 = ciTexCoord0.st;
+        vTexCoord0 = ciTexCoord0;
         gl_Position = ciModelViewProjection * ciPosition;
     }
 )";
@@ -40,12 +40,12 @@ static const std::string sFragmentShaderColorSpaceConversion = R"(
     uniform sampler2D image;
     uniform bool hasAlpha;
 
-    in vec2 TexCoord0;
+    in vec2 vTexCoord0;
 
-    out vec4 FragColor;
+    out vec4 oFragColor;
 
     void main() {
-        vec4 color = texture(image, TexCoord0.st);
+        vec4 color = texture(image, vTexCoord0);
 
         // component encoding and order differs on presence of alpha
         float y, co, cg, a;
@@ -65,7 +65,7 @@ static const std::string sFragmentShaderColorSpaceConversion = R"(
         float b = y - co - cg;
         vec4 result = vec4(r, g, b, a);
 
-        FragColor = result;
+        oFragColor = result;
     }
 )";
 
@@ -85,7 +85,7 @@ private:
 void ImageCompressorApp::setup() {
     // grab the source
     try {
-        mSurface = Surface::create(loadImage(loadAsset("grad.png")));
+        mSurface = Surface::create(loadImage(loadAsset("grad-cutout.png")));
     } catch (ci::Exception& e) {
         console() << "unable to create surface: " << e.what() << endl;
         quit();

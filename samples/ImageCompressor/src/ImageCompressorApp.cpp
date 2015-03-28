@@ -9,6 +9,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Log.h"
 
 #include "Cinder-DDS.h"
 
@@ -84,7 +85,7 @@ void ImageCompressorApp::setup() {
     try {
         mSurface = Surface::create(loadImage(loadAsset("grad-cutout.png")));
     } catch (ci::Exception& e) {
-        console() << "unable to create surface: " << e.what() << endl;
+        CI_LOG_EXCEPTION("unable to create surface", e);
         quit();
     }
     mSourceTexture = gl::Texture::create(*mSurface);
@@ -97,7 +98,7 @@ void ImageCompressorApp::setup() {
     try {
         mResultTexture = gl::Texture2d::createFromDds(DataSourceBuffer::create(buffer));
     } catch (ci::Exception& e) {
-        console() << "failed to create texture from DDS file: " << e.what() << endl;
+        CI_LOG_EXCEPTION("failed to create texture from DDS file", e);
         quit();
     }
 
@@ -110,10 +111,10 @@ void ImageCompressorApp::setup() {
         try {
             mShader = gl::GlslProg::create(sVertexShaderPassThrough, sFragmentShaderColorSpaceConversion);
         } catch (gl::GlslProgCompileExc& e) {
-            console() << "failed to compile shader: " << e.what() << endl;
+            CI_LOG_EXCEPTION("failed to compile shader", e);
             quit();
         } catch (ci::Exception& e) {
-            console() << "failed to create shader: " << e.what() << endl;
+            CI_LOG_EXCEPTION("failed to create shader", e);
             quit();
         }
 

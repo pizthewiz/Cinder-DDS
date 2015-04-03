@@ -130,7 +130,7 @@ void ImageCompressorApp::setup() {
         gl::ScopedGlslProg shader(mShader);
 
         mShader->uniform("image", 0);
-        mShader->uniform("hasAlpha", mSurface->hasAlpha());
+        mShader->uniform("hasAlpha", mResultTexture->hasAlpha());
         gl::drawSolidRect(mResultTexture->getBounds());
 
         // pull texture out of the FBO
@@ -140,7 +140,7 @@ void ImageCompressorApp::setup() {
     // denote the texture as vertically flipped
     mResultTexture->setTopDown();
 
-    if (mSurface->hasAlpha()) {
+    if (mResultTexture->hasAlpha()) {
         gl::enableAlphaBlending();
     }
 }

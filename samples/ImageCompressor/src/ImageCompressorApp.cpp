@@ -36,7 +36,6 @@ static const std::string sVertexShaderPassThrough = R"(
 static const std::string sFragmentShaderColorSpaceConversion = R"(
     #version 150
     uniform sampler2D image;
-    uniform bool hasAlpha;
 
     in vec2 vTexCoord0;
 
@@ -47,17 +46,17 @@ static const std::string sFragmentShaderColorSpaceConversion = R"(
 
         // component encoding and order differs on presence of alpha
         float y, co, cg, a;
-        if (hasAlpha) {
+        #ifdef HAS_ALPHA
             co = color.x - (0.5 * 256.0 / 255.0);
             cg = color.y - (0.5 * 256.0 / 255.0);
             a = color.z;
             y = color.w;
-        } else {
+        #else
             co = color.x - (0.5 * 256.0 / 255.0);
             y = color.y;
             cg = color.z - (0.5 * 256.0 / 255.0);
             a = 1.0;
-        }
+        #endif
         float r = y + co - cg;
         float g = y + cg;
         float b = y - co - cg;
@@ -109,7 +108,12 @@ void ImageCompressorApp::setup() {
 
         // create color space conversion shader
         try {
-            mShader = gl::GlslProg::create(sVertexShaderPassThrough, sFragmentShaderColorSpaceConversion);
+            auto format = gl::GlslProg::Format().vertex(sVertexShaderPassThrough).fragment(sFragmentShaderColorSpaceConversion);
+            // NB: cannot use mResultTexture->hasAlpha() as all textures created via Texture2d::createFromDds() are RGBA
+            if (mSurface->hasAlpha()) {
+                format.define("HAS_ALPHA");
+            }
+            mShader = gl::GlslProg::create(format);
         } catch (gl::GlslProgCompileExc& e) {
             CI_LOG_EXCEPTION("failed to compile shader", e);
             quit();
@@ -130,7 +134,6 @@ void ImageCompressorApp::setup() {
         gl::ScopedGlslProg shader(mShader);
 
         mShader->uniform("image", 0);
-        mShader->uniform("hasAlpha", mResultTexture->hasAlpha());
         gl::drawSolidRect(mResultTexture->getBounds());
 
         // pull texture out of the FBO

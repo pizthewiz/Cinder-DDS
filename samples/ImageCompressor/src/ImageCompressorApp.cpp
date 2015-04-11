@@ -83,7 +83,7 @@ private:
 void ImageCompressorApp::setup() {
     // grab the source
     try {
-        mSurface = Surface::create(loadImage(loadAsset("grad-cutout.png")));
+        mSurface = Surface::create(loadImage(loadAsset("gradient-rgba.png")));
     } catch (ci::Exception& e) {
         CI_LOG_EXCEPTION("unable to create surface", e);
         quit();

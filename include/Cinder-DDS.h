@@ -12,12 +12,12 @@
 
 namespace Cinder { namespace DDS {
 
-enum class CompressionFormat {DXT1, DXT5, YCoCg_DXT5};
+enum class CompressionFormat { DXT1, DXT5, YCoCg_DXT5 };
 
 //! Retuns an owned pointer to the DXT compressed data and provides its length in \a length
-const unsigned char* DXTCompress(const ci::Surface8uRef& surface, CompressionFormat format, int* length);
+const unsigned char* DXTCompress(const ci::Surface8uRef& surface, const CompressionFormat format, int* length);
 
 //! Retuns a buffer containing the DDS file header and DXT compressed data
-const ci::Buffer DDSConvert(const ci::Surface8uRef& surface, CompressionFormat format);
+const ci::Buffer DDSConvert(const ci::Surface8uRef& surface, const CompressionFormat format);
 
 }}

@@ -77,7 +77,7 @@ const ci::BufferRef DDSConvert(const ci::Surface8uRef& surface, const Compressio
     }
     header->sCaps.dwCaps1 = DDSCAPS_TEXTURE;
 
-    BufferRef buffer = std::make_shared<Buffer>(sizeof(DDS_header) + length);
+    BufferRef buffer = Buffer::create(sizeof(DDS_header) + length);
     memcpy((unsigned char*)buffer->getData() + 0, header, sizeof(DDS_header));
     memcpy((unsigned char*)buffer->getData() + sizeof(DDS_header), data, length);
 

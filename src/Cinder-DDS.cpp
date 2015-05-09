@@ -46,7 +46,7 @@ const unsigned char* DXTCompress(const ci::Surface8uRef& surface, const Compress
     return destination;
 }
 
-const ci::Buffer DDSConvert(const ci::Surface8uRef& surface, const CompressionFormat format) {
+const ci::BufferRef DDSConvert(const ci::Surface8uRef& surface, const CompressionFormat format) {
     int length = 0;
     const unsigned char* data = DXTCompress(surface, format, &length);
     if (!data) {
@@ -77,9 +77,9 @@ const ci::Buffer DDSConvert(const ci::Surface8uRef& surface, const CompressionFo
     }
     header->sCaps.dwCaps1 = DDSCAPS_TEXTURE;
 
-    Buffer buffer(sizeof(DDS_header) + length);
-    memcpy((unsigned char*)buffer.getData() + 0, header, sizeof(DDS_header));
-    memcpy((unsigned char*)buffer.getData() + sizeof(DDS_header), data, length);
+    BufferRef buffer = std::make_shared<Buffer>(sizeof(DDS_header) + length);
+    memcpy((unsigned char*)buffer->getData() + 0, header, sizeof(DDS_header));
+    memcpy((unsigned char*)buffer->getData() + sizeof(DDS_header), data, length);
 
     free((void*)data);
     data = NULL;

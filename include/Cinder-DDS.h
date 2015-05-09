@@ -18,6 +18,6 @@ enum class CompressionFormat { DXT1, DXT5, YCoCg_DXT5 };
 const unsigned char* DXTCompress(const ci::Surface8uRef& surface, const CompressionFormat format, int* length);
 
 //! Retuns a buffer containing the DDS file header and DXT compressed data
-const ci::Buffer DDSConvert(const ci::Surface8uRef& surface, const CompressionFormat format);
+const ci::BufferRef DDSConvert(const ci::Surface8uRef& surface, const CompressionFormat format);
 
 }}

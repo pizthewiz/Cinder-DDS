@@ -91,7 +91,7 @@ void ImageCompressorApp::setup() {
 
     // convert to a DXT compressed DDS file buffer
     CompressionFormat format = CompressionFormat::YCoCg_DXT5;
-    const Buffer buffer = DDSConvert(mSurface, format);
+    const BufferRef buffer = DDSConvert(mSurface, format);
 
     // create a texture from DDS file buffer
     try {

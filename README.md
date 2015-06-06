@@ -7,7 +7,7 @@ The YCoCg-DXT5 compression format DXT5 compresses image data in the [YCoCg color
 
 [DirectDraw Surface](http://en.wikipedia.org/wiki/DirectDraw_Surface) (DDS) is an image file container often used for DXT compressed images. It was created by Microsoft, is well supported on Windows in both creation and loading though importantly Cinder can create a texture from a DDS file on non-Windows platforms.
 
-*NOTE* - `Cinder-DDS` is to be used with the heir apparent Cinder branch, [glNext](https://github.com/cinder/Cinder/tree/glNext).
+*NOTE* - `Cinder-DDS` is to be used with the upcoming 0.9.0 Cinder release.
 
 ### USAGE
 Convert PNG to DXT5 compressed DDS file and create texture from it

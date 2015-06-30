@@ -2,12 +2,16 @@
 <cinder>
 <block
     name="DDS"
-    id="com.chordedconstructions.fleshworld.cinder-dds"
+    id="com.chordedconstructions.cinder-dds"
     git="https://github.com/pizthewiz/Cinder-DDS.git"
-    author="Jean-Pierre Mouilleseaux"
+    author="Jean-Pierre Mouilleseaux, Martín Lucas Golini"
     summary="DXT1, DXT5 YCoCg-DXT5 image compression and DDS file creation"
     url="https://github.com/pizthewiz/Cinder-DDS"
+    library="https://bitbucket.org/SpartanJ/soil2"
     >
+    <supports os="macosx" />
+    <supports os="msw" />
+
     <header>include/Cinder-DDS.h</header>
     <source>src/Cinder-DDS.cpp</source>
 
